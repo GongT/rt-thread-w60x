@@ -1,5 +1,5 @@
 from os import getenv, getcwd, chdir, environ
-from os.path import join, abspath, dirname
+from os.path import join, abspath, dirname, isfile
 from sys import path as importPath, stderr, executable as argv0
 from pathlib import Path
 
@@ -59,13 +59,34 @@ except:
     print('Download from: https://github.com/RT-Thread/rt-thread')
     exit(-1)
 
+rtconfig_file = join(BSP_ROOT, 'rtconfig.py')
+if not isfile(rtconfig_file):
+    print(f'missing {rtconfig_file}.')
+    exit(-1)
+
+# rtconfig.py补丁
+with open(rtconfig_file, 'r+t') as rtconfig_fd:
+    content = rtconfig_fd.read()
+    import re
+    BUILD_ENV = getenv('BUILD_ENV', 'debug')
+    r_want = re.compile(f"^BUILD = '{BUILD_ENV}'$", re.MULTILINE)
+    if re.search(r_want, content) == None:
+        r_repl = re.compile("^BUILD\s*=.*$", re.MULTILINE)
+        print("[WARN] patch file: %s" % rtconfig_fd.name)
+        CODE = f"BUILD = '{BUILD_ENV}'"
+        if re.search(r_repl, content) == None:
+            content = CODE + '\n\n' + content
+        else:
+            content = re.sub(r_repl, CODE, content)
+        rtconfig_fd.seek(0)
+        rtconfig_fd.write(content)
+        rtconfig_fd.truncate()
+
 # 加载w60x特定的构建设置
-try:
+if True:
     chdir(BSP_ROOT)
     import rtconfig
-except:
-    print('missing %s/rtconfig.py.' % BSP_ROOT)
-    exit(-1)
+    chdir(LIBRARY_ROOT)
 
 rtconfig.POST_ACTION = f'''
 $SIZE $TARGET
@@ -113,7 +134,7 @@ env = Environment(
     LINKFLAGS=rtconfig.LFLAGS,
     SIZE=rtconfig.SIZE,
     OBJCPY=rtconfig.OBJCPY,
-    CPPPATH=["library/inc"],
+    CPPPATH=["library/inc", join(LIBRARY_ROOT, 'include')],
     COMPILATIONDB_USE_ABSPATH=True)
 env.PrependENVPath('PATH', rtconfig.EXEC_PATH)
 env.PrependENVPath('PROJECT_ROOT', PROJECT_ROOT)
@@ -124,7 +145,6 @@ if rtconfig.PLATFORM == 'iar':
     env.Replace(ARFLAGS=[''])
     env.Replace(LINKCOM=env["LINKCOM"] + ' --map project.map')
 
-chdir(LIBRARY_ROOT)
 objs = PrepareBuilding(env, RTT_ROOT, has_libcpu=False)
 env['BSP_ROOT'] = BSP_ROOT
 

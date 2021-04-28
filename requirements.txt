@@ -1,0 +1,4 @@
+pyserial>=3.5
+xmodem>=0.4.6
+PyPrind>=2.11.2
+json5>=0.9.5

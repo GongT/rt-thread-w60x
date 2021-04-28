@@ -1,0 +1,29 @@
+{
+	/* ARM GCC 路径（到bin目录） */
+	"RTT_EXEC_PATH": "",
+	/* RT-Thread内核源码根目录 */
+	"RTT_ROOT": "{RT_THREAD_ROOT}",
+	/* env工具目录，可选 debug 或任意其他值 */
+	"BUILD_ENV": "debug",
+	/* 当运行生成任务（中的刷写）时，默认使用的端口号，例如COM11就写11 */
+	"serialPortNumber": 0,
+	"files.associations": {
+		"*.h": "c",
+		"SConscript": "python",
+		"SConstruct": "python",
+		"functional": "c"
+	},
+	"files.exclude": {
+		"**/.git": true,
+		"**/__pycache__": true,
+		"**/*.dblite": true,
+		"**/*.dbsqlite": true,
+		"**/.DS_Store": true,
+		"**/*.o": true,
+	},
+	"[c]": {
+		"editor.defaultFormatter": "ms-vscode.cpptools",
+		"editor.formatOnSave": true,
+		"editor.formatOnSaveMode": "modifications",
+	}
+}

@@ -1,6 +1,6 @@
 from helpers import exec_pass, request_config, die, SELF_ROOT, PROJECT_ROOT, print, BINARY_NAME, BIN_FILE
 from os import environ, chdir, name as PLATFORM_NAME, remove
-from os.path import join, isfile
+from os.path import join, isfile, getmtime
 from shutil import copy2
 
 help_title = "运行scons"
@@ -27,9 +27,16 @@ def copy_config():
 
 
 def moveback():
+    if getmtime(library_config_file) == getmtime(project_config_file):
+        print('config file did not change')
+        return
     print(f"[WARN] copy to {project_config_file}")
     copy2(src=library_config_file, dst=project_config_file)
-    remove(library_config_file)
+    # remove(library_config_file)
+
+
+def scons(argv):
+    main(argv)
 
 
 def main(argv):
@@ -55,5 +62,5 @@ def main(argv):
     exec_pass('scons', argv)
 
     if is_menuconfig:
-        moveback()
-        exec_pass('scons', [f'--useconfig={project_config_file}'])
+        if moveback():
+            exec_pass('scons', [f'--useconfig={project_config_file}'])
