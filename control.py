@@ -1,4 +1,4 @@
-#!/use/bin/env python3
+#!/usr/bin/env python3
 
 from helpers import Usage, do_exit, loadJob, print, BIN_PATH, SELF_BIN_PATH
 from os.path import isdir

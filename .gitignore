@@ -13,6 +13,6 @@ Debug
 __pycache__
 packages/
 .DS_Stor*
-.vscode/compile_commands.json
-.config
+.vscode/
+.config*
 rtconfig.h

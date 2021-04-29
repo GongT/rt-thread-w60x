@@ -1,17 +1,7 @@
 from os import chmod, remove
 from os.path import isfile
-from hashlib import md5
 
-from helpers import die, exec_pass, load_wm_module, tools_path, python_pass, eval_pass, BIN_FILE, VERSION_FILE, IMG_FILE, FLS_FILE, FLASH_SIGNAL, print
-
-
-def md5_file(fname):
-    hash_md5 = md5()
-    with open(fname, "rb") as f:
-        for chunk in iter(lambda: f.read(4096), b""):
-            hash_md5.update(chunk)
-    return hash_md5.hexdigest()
-
+from helpers import md5_file, die, exec_pass, load_wm_module, tools_path, python_pass, eval_pass, BIN_FILE, VERSION_FILE, IMG_FILE, FLS_FILE, FLASH_SIGNAL, print
 
 # 1M
 # "python" $WM_TOOLS/wm_gzip.py "./Bin/rtthread.bin"

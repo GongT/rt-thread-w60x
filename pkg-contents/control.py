@@ -1,4 +1,4 @@
-#!/use/bin/env python3
+#!/usr/bin/env python3
 from importlib.util import spec_from_file_location, module_from_spec
 from os.path import dirname
 from sys import path as importPath

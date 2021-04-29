@@ -51,7 +51,6 @@ if isfile(proj_script):
 else:
     objs += IncludeChilds(PROJECT_ROOT, variant_dir='user', skip=[self_dir], duplicate=0)
 
-objs += base
 objs += IncludeChilds(BSP_ROOT, duplicate=0, variant_dir='bsp', skip=['applications'])
 
 Return('objs')

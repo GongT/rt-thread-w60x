@@ -1,4 +1,4 @@
-#!/use/bin/env python3
+#!/usr/bin/env python3
 
 if __name__ != '__main__':
     raise "This file can not use as a module"
