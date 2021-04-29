@@ -7,6 +7,10 @@ help_title = '打开串口'
 
 def main(argv):
     serial_instance = open_port(get_port_number_from_first_arg(argv))
+
+    if serial_instance is None:
+        do_exit(1)
+
     term(serial_instance)
 
 

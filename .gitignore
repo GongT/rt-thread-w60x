@@ -16,3 +16,4 @@ packages/
 .vscode/
 .config*
 rtconfig.h
+.control.pid

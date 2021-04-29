@@ -16,5 +16,6 @@ def main(argv):
     if not r:
         print("刷机失败")
         return
+    serial_instance.baudrate = 115200
     print("切换到串口输出，请等待程序解压缩……")
     term(serial_instance)

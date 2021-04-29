@@ -1,15 +1,25 @@
 # W600 RT-Thread 工具集（用vscode编程）
 
 ## 使用
+
+0. 安装系统级依赖（只需要一次）
+	* 系统包：python3、scons、串口驱动
+	* 第三方：arm gcc（在[这里](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads)下载）
+	* python：`pip install --user pyserial xmodem PyPrind json5`
+	* `rt-thread`源码：[GitHub](https://github.com/RT-Thread/rt-thread)或[码云](https://gitee.com/rtthread/rt-thread)，通过`git clone`或下载zip包都可以，版本至少4.x
+
+
 1. 找一个放源码的目录
 	```bash
-	mkdir ~/Workspace/w600/my-new-project
-	cd ~/Workspace/w600/my-new-project
+	cd ~/Workspace/w600 # 随便找个地方
+
+	git init my-new-project # 随便起个名
+	cd my-new-project
 	```
 
 1. 下载工具集
 	```bash
-	git clone https://github.com/GongT/rt-thread-w60x.git
+	git submodule add https://github.com/GongT/rt-thread-w60x.git
 	```
 
 1. 初始化项目
@@ -25,15 +35,8 @@
 
 　
 
-0. 安装系统级依赖（只需要一次）
-	* 系统包：python3、scons、串口驱动
-	* 第三方：arm gcc（在[这里](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads)下载）
-	* python：`pip install -r requirements.txt --user`（或者其他安装方法）
-	* `rt-thread`源码：[GitHub](https://github.com/RT-Thread/rt-thread)或[码云](https://gitee.com/rtthread/rt-thread)，通过`git clone`或下载zip包都可以，版本至少4.x
-
 ## 命令
 ```bash
-python3 control.py <命令> [...参数]
+./control.py --help
+./control.py <命令> [...参数]
 ```
-
-1.

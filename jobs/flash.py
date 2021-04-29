@@ -4,10 +4,8 @@ from time import sleep
 from xmodem import XMODEM1k as XMODEM
 from serial import Serial, PARITY_NONE, SerialException
 from pyprind import ProgBar
-import struct
-import threading
 
-from helpers import print, do_exit, open_port, port_path, control_reset, FLASH_SIGNAL, PROJECT_ROOT, IMG_FILE, do_exit, die, exclusive_kill
+from helpers import FLS_FILE, goto_flash_mode, print, do_exit, open_port, port_path, control_reset, FLASH_SIGNAL, PROJECT_ROOT, IMG_FILE, do_exit, die, exclusive_kill
 from . import get_port_number_from_first_arg
 
 help_title = '刷机'
@@ -46,35 +44,16 @@ def flash(serial_port, force, low_speed):
     write_with_bar.current = 0
 
     # go to flash
-    print('请重启设备！')
-    stop_hold = threading.Event()
-    holder_thread = threading.Thread(target=hold_esc, args=[serial_port, stop_hold], name='hold_esc')
-    holder_thread.daemon = False
-    holder_thread.start()
+    mode = goto_flash_mode(serial_port)
 
-    sleep(0.5)
-    control_reset(serial_port)
+    if mode == 'C':
+        image_file = IMG_FILE
+    elif mode == 'P':
+        image_file = FLS_FILE
+    else:
+        return False
 
-    c_cnt = 0
-    while True:
-        if not holder_thread.is_alive():
-            print('hold thread died, flash fail.')
-            return False
-        c_in = serial_port.read(1)
-        if c_in is None or len(c_in) == 0 or c_in == b'\x1B':
-            continue
-
-        if c_in == b'C':
-            c_cnt += 1
-            if c_cnt >= 3:
-                break
-        else:
-            c_cnt = 0
-            serial_port.read_all()
-
-    stop_hold.set()
-    print('\nGot CCC...')
-
+    mac = ''
     get_mac_cmd = bytes.fromhex('210600ea2d38000000')
     serial_port.timeout = None
     while True:
@@ -101,6 +80,7 @@ def flash(serial_port, force, low_speed):
         serial_port.baudrate = br
 
     if not low_speed:
+        print('switching to 2M baudrate...')
         sleep(0.2)
         speed_magic = bytes.fromhex('210a00ef2a3100000080841e00')
         serial_port.write(speed_magic)
@@ -112,7 +92,7 @@ def flash(serial_port, force, low_speed):
         while True:
             c_in = serial_port.read(1)
             # print('got: "%s"' % c_in)
-            if c_in == b'C':
+            if c_in == b'C' or c_in == b'P':
                 break
             if c_in == b'\x00':
                 continue
@@ -125,10 +105,11 @@ def flash(serial_port, force, low_speed):
                 sleep(0.01)
             else:
                 wront_cnt += 1
-        print('Enter high speed mode!')
+        print('high speed mode!')
     serial_port.timeout = None
 
-    stream = open(IMG_FILE, 'rb')
+    print('sending file:', image_file)
+    stream = open(image_file, 'rb')
 
     clear_buffer()
     modem = XMODEM(getc=read_with_bar, putc=write_with_bar)
@@ -147,13 +128,3 @@ def flash(serial_port, force, low_speed):
 
     clear_buffer()
     return True
-
-
-def hold_esc(serial_port, stop):
-    try:
-        while not stop.is_set():
-            serial_port.write(struct.pack('<B', 27))
-            sleep(0.1)
-            # read all that is there or wait for one byte
-    except SerialException:
-        print(f"hold ESC failed: {e}")
