@@ -1,5 +1,5 @@
 from serial.tools.miniterm import Miniterm, key_description
-from helpers import print, open_port, exclusive_kill
+from helpers import print, open_port, exclusive_kill, do_exit
 from . import get_port_number_from_first_arg
 
 help_title = '打开串口'

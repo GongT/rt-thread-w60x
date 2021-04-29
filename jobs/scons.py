@@ -55,7 +55,6 @@ def write_last_hash(src):
 
 def main(argv):
     argv.append(f"--sconstruct={join(SELF_ROOT, 'SConstruct')}")
-    argv.append(f"--directory=={PROJECT_ROOT}")
     # argv.append(f"--verbose")
 
     if '--verbose' not in argv:
