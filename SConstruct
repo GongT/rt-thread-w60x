@@ -136,6 +136,7 @@ env = Environment(
     OBJCPY=rtconfig.OBJCPY,
     CPPPATH=["library/inc", join(LIBRARY_ROOT, 'include')],
     COMPILATIONDB_USE_ABSPATH=True)
+Export('env')
 env.PrependENVPath('PATH', rtconfig.EXEC_PATH)
 env.PrependENVPath('PROJECT_ROOT', PROJECT_ROOT)
 env.PrependENVPath('LIBRARY_ROOT', LIBRARY_ROOT)

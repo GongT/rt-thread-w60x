@@ -22,7 +22,10 @@ def IncludeChilds(root, variant_dir='', skip=[], duplicate=0):
         absfile = join(path, 'SConscript')
         if isfile(absfile):
             debug(f'Using {absfile}')
-            objs += SConscript(absfile, duplicate=duplicate, variant_dir=variant_dir + d)
+            base = SConscript(absfile, duplicate=duplicate, variant_dir=variant_dir + d)
+            if base is None:
+                die(f"Missing Return(...) in {absfile}")
+            objs += base
     return objs
 
 
@@ -39,7 +42,16 @@ proj_script = join(PROJECT_ROOT, 'SConscript')
 debug(f'Using {proj_script}')
 
 objs = []
-objs += SConscript(proj_script, duplicate=0, variant_dir='user')
+
+if isfile(proj_script):
+    base = SConscript(proj_script, duplicate=0, variant_dir='user')
+    if base is None:
+        die(f"Missing Return(...) in {proj_script}")
+    objs += base
+else:
+    objs += IncludeChilds(PROJECT_ROOT, variant_dir='user', skip=[self_dir], duplicate=0)
+
+objs += base
 objs += IncludeChilds(BSP_ROOT, duplicate=0, variant_dir='bsp', skip=['applications'])
 
 Return('objs')

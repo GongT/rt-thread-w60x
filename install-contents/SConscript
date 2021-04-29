@@ -1,5 +1,7 @@
 import os.path
 
+Import("env")
+
 __file__ = os.path.abspath((lambda x: x).__code__.co_filename)
 Import('IncludeChilds')
 

@@ -56,19 +56,6 @@
 
 /* Command shell */
 
-#define RT_USING_FINSH
-#define FINSH_THREAD_NAME "tshell"
-#define FINSH_USING_HISTORY
-#define FINSH_HISTORY_LINES 5
-#define FINSH_USING_SYMTAB
-#define FINSH_USING_DESCRIPTION
-#define FINSH_THREAD_PRIORITY 20
-#define FINSH_THREAD_STACK_SIZE 4096
-#define FINSH_CMD_SIZE 80
-#define FINSH_USING_MSH
-#define FINSH_USING_MSH_DEFAULT
-#define FINSH_USING_MSH_ONLY
-#define FINSH_ARG_MAX 10
 
 /* Device virtual file system */
 
@@ -90,12 +77,8 @@
 #define RT_SERIAL_RB_BUFSZ 128
 #define RT_USING_HWTIMER
 #define RT_USING_PIN
-#define RT_USING_PWM
 #define RT_USING_RTC
 #define RT_USING_SOFT_RTC
-#define RTC_SYNC_USING_NTP
-#define RTC_NTP_FIRST_SYNC_DELAY 30
-#define RTC_NTP_SYNC_PERIOD 3600
 #define RT_USING_WDT
 #define RT_USING_HWCRYPTO
 #define RT_HWCRYPTO_DEFAULT_NAME "hwcryto"
@@ -154,7 +137,6 @@
 /* protocol stack implement */
 
 #define SAL_USING_LWIP
-#define SAL_USING_TLS
 #define SAL_USING_POSIX
 
 /* Network interface device */
@@ -170,17 +152,18 @@
 /* light weight TCP/IP stack */
 
 #define RT_USING_LWIP
-#define RT_USING_LWIP212
+#define RT_USING_LWIP202
 #define RT_LWIP_MEM_ALIGNMENT 4
+#define RT_LWIP_IGMP
 #define RT_LWIP_ICMP
 #define RT_LWIP_DNS
 #define RT_LWIP_DHCP
-#define IP_SOF_BROADCAST 5
-#define IP_SOF_BROADCAST_RECV 5
+#define IP_SOF_BROADCAST 1
+#define IP_SOF_BROADCAST_RECV 1
 
 /* Static IPv4 Address */
 
-#define RT_LWIP_IPADDR "192.168.1.30"
+#define RT_LWIP_IPADDR "192.168.1.1"
 #define RT_LWIP_GWADDR "192.168.1.1"
 #define RT_LWIP_MSKADDR "255.255.255.0"
 #define RT_LWIP_UDP
@@ -202,7 +185,6 @@
 #define RT_LWIP_ETHTHREAD_PRIORITY 12
 #define RT_LWIP_ETHTHREAD_STACKSIZE 1024
 #define RT_LWIP_ETHTHREAD_MBOX_SIZE 8
-#define RT_LWIP_REASSEMBLY_FRAG
 #define LWIP_NETIF_STATUS_CALLBACK 1
 #define LWIP_NETIF_LINK_CALLBACK 1
 #define SO_REUSE 1
@@ -210,15 +192,16 @@
 #define LWIP_SO_SNDTIMEO 1
 #define LWIP_SO_RCVBUF 1
 #define LWIP_SO_LINGER 0
-#define RT_LWIP_NETIF_LOOPBACK
-#define LWIP_NETIF_LOOPBACK 1
-#define RT_LWIP_STATS
+#define LWIP_NETIF_LOOPBACK 0
 #define RT_LWIP_USING_HW_CHECKSUM
 #define RT_LWIP_USING_PING
 #define RT_LWIP_DEBUG
 
 /* AT commands */
 
+#define LWIP_USING_DHCPD
+#define DHCPD_SERVER_IP "192.168.1.1"
+#define DHCPD_USING_ROUTER
 
 /* VBUS(Virtual Software BUS) */
 
@@ -244,14 +227,6 @@
 
 /* IoT - internet of things */
 
-#define PKG_USING_PAHOMQTT
-#define PAHOMQTT_PIPE_MODE
-#define PKG_USING_PAHOMQTT_EXAMPLE
-#define MQTT_USING_TLS
-#define RT_PKG_MQTT_THREAD_STACK_SIZE 10240
-#define PKG_PAHOMQTT_SUBSCRIBE_HANDLERS 1
-#define MQTT_DEBUG
-#define PKG_USING_PAHOMQTT_V110
 
 /* Wi-Fi */
 
@@ -266,23 +241,13 @@
 #define NETUTILS_NTP_HOSTNAME "cn.ntp.org.cn"
 #define NETUTILS_NTP_HOSTNAME2 "ntp.rt-thread.org"
 #define NETUTILS_NTP_HOSTNAME3 "edu.ntp.org.cn"
-#define PKG_USING_NETUTILS_V110
+#define PKG_USING_NETUTILS_LATEST_VERSION
 
 /* IoT Cloud */
 
 
 /* security packages */
 
-#define PKG_USING_MBEDTLS
-
-/* Select Root Certificate */
-
-#define MBEDTLS_AES_ROM_TABLES
-#define MBEDTLS_ECP_WINDOW_SIZE 2
-#define MBEDTLS_SSL_MAX_CONTENT_LEN 3584
-#define MBEDTLS_MPI_MAX_SIZE 1024
-#define MBEDTLS_CTR_DRBG_KEYSIZE 32
-#define PKG_USING_MBEDTLS_V2710
 
 /* language packages */
 
@@ -322,11 +287,13 @@
 #define PKG_AGILE_BUTTON_DEBUG
 #define PKG_AGILE_BUTTON_THREAD_STACK_SIZE 256
 #define PKG_AGILE_BUTTON_THREAD_PRIORITY 28
+#define PKG_AGILE_BUTTON_USING_EXAMPLE
 #define PKG_USING_AGILE_BUTTON_LATEST_VERSION
 #define PKG_USING_AGILE_LED
 #define PKG_AGILE_LED_DEBUG
 #define PKG_AGILE_LED_THREAD_STACK_SIZE 256
 #define PKG_AGILE_LED_THREAD_PRIORITY 28
+#define PKG_AGILE_LED_USING_EXAMPLE
 #define PKG_USING_AGILE_LED_LATEST_VERSION
 
 /* AI packages */
@@ -358,17 +325,11 @@
 #define BSP_USING_UART0
 #define BSP_USING_PIN
 #define BSP_USING_WIFI
-#define BSP_USING_PWM
-#define USING_PWM_CH1
-#define WM_PWM_CH1_PIN 23
-#define USING_PWM_CH2
-#define WM_PWM_CH2_PIN 22
-#define USING_PWM_CH5
-#define WM_PWM_CH5_PIN 28
 #define BSP_USING_CRYPTO
 
 /* External Libraries */
 
 #define SOC_W60X
+#include "rtconfig_project.h"
 
 #endif

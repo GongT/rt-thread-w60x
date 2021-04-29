@@ -55,9 +55,16 @@ def main(argv):
         with open(rtconfig_file, 'wt') as f:
             f.write('#pragma once')
 
+    rtconfig_project_file = join(PROJECT_ROOT, 'rtconfig_project.h')
+    if not isfile(rtconfig_project_file):
+        with open(rtconfig_project_file,'wt') as f:
+            f.write('# place custom config here')
+
     is_menuconfig = ('--menuconfig' in argv) or ('--pyconfig' in argv)
     if is_menuconfig:
         copy_config()
+    else:
+        exec_pass('scons', [f'--useconfig={project_config_file}'])
 
     exec_pass('scons', argv)
 
