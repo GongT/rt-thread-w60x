@@ -29,3 +29,8 @@ def open_port(portnumber, baudrate=115200, timeout=0, write_timeout=None, open=T
         debug('could not open port {portpath}: {e}\n')
         return None
     return serial_instance
+
+
+def control_reset(serial):
+    serial.rts = True
+    serial.rts = False

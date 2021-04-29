@@ -1,0 +1,92 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"id": "cdb",
+			"label": "刷新compile_commands.json",
+			"type": "process",
+			"problemMatcher": [],
+			"command": "python",
+			"args": [
+				"control.py",
+				"scons",
+				"cdb",
+			],
+		},
+		{
+			"id": "make",
+			"label": "🔨构建",
+			"type": "process",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"isBuildCommand": true,
+			"problemMatcher": "$gcc",
+			"command": "python",
+			"args": [
+				"control.py",
+				"scons",
+			],
+		},
+		{
+			"id": "menuconfig",
+			"label": "运行MenuConfig",
+			"type": "process",
+			"problemMatcher": [],
+			"command": "python",
+			"args": [
+				"control.py",
+				"config",
+			],
+		},
+		{
+			"id": "flash",
+			"label": "刷机",
+			"type": "process",
+			"problemMatcher": [],
+			"command": "python",
+			"args": [
+				"control.py",
+				"flash",
+			],
+		},
+		{
+			"id": "build-flash-term",
+			"isTestCommand": true,
+			"label": "构建、刷机并启动串口监视器",
+			"type": "process",
+			"problemMatcher": [],
+			"command": "python",
+			"args": [
+				"control.py",
+				"flashterm",
+			],
+			"dependsOn": ["🔨构建"]
+		},
+		{
+			"id": "flash-term",
+			"label": "▶刷机并启动串口监视器",
+			"type": "process",
+			"problemMatcher": [],
+			"command": "python",
+			"args": [
+				"control.py",
+				"flashterm",
+			],
+		},
+		{
+			"id": "term",
+			"label": "串口监视器",
+			"type": "process",
+			"problemMatcher": [],
+			"command": "python",
+			"args": [
+				"control.py",
+				"term",
+			],
+		}
+	]
+}

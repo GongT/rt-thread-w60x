@@ -2,12 +2,12 @@ from os import stat
 from os.path import isfile
 from time import sleep
 from xmodem import XMODEM1k as XMODEM
-from serial import Serial, PARITY_NONE
+from serial import Serial, PARITY_NONE, SerialException
 from pyprind import ProgBar
 import struct
 import threading
 
-from helpers import print, open_port, port_path, FLASH_SIGNAL, PROJECT_ROOT, IMG_FILE, do_exit, die, exclusive_kill
+from helpers import print, open_port, port_path, control_reset, FLASH_SIGNAL, PROJECT_ROOT, IMG_FILE, do_exit, die, exclusive_kill
 from . import get_port_number_from_first_arg
 
 help_title = '刷机'
@@ -44,11 +44,14 @@ def flash(serial_port, force, low_speed):
     write_with_bar.current = 0
 
     # go to flash
-    print('please restart device!')
+    print('请重启设备！')
     stop_hold = threading.Event()
     holder_thread = threading.Thread(target=hold_esc, args=[serial_port, stop_hold], name='hold_esc')
     holder_thread.daemon = False
     holder_thread.start()
+
+    sleep(0.5)
+    control_reset(serial_port)
 
     c_cnt = 0
     while True:
@@ -87,6 +90,7 @@ def flash(serial_port, force, low_speed):
             if f.read().strip() == mac:
                 print("this device already flash this program! skip flash. (--force to overwrite)")
                 clear_buffer()
+                control_reset(serial_port)
                 return True
 
     # up speed
@@ -149,5 +153,5 @@ def hold_esc(serial_port, stop):
             serial_port.write(struct.pack('<B', 27))
             sleep(0.1)
             # read all that is there or wait for one byte
-    except serial.SerialException:
+    except SerialException:
         print(f"hold ESC failed: {e}")

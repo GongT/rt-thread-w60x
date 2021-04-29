@@ -7,6 +7,7 @@ from os.path import dirname, abspath, split, isfile, isdir, join, relpath
 from os import getcwd, listdir, mkdir
 from shutil import copy2, copystat
 from pathlib import Path
+from json5 import load, dump
 
 from helpers.output import die, debug as print
 
@@ -36,9 +37,9 @@ print("初始化项目……（%s）" % INSTALL_TO)
 def place_file(name, data=None, copy=None, overwrite=False):
     p = join(INSTALL_TO, name)
     if not overwrite and isfile(p):
-        print("exists:", name)
+        # print("exists:", name)
         return
-    print("create:", name)
+    # print("create:", name)
     d = dirname(p)
     if not isdir(d):
         mkdir(d)
@@ -95,3 +96,48 @@ for i in ['.gitignore', '.editorconfig', 'version.txt', 'SConscript']:
 
 copy_file('README.md', replace_self_name)
 copy_file('control.py', replace_self_path, overwrite=True)
+
+tasks_file_path = join(SELF_DIR, 'install-contents/.vscode/tasks.json')
+tasks_file_dist_path = join(INSTALL_TO, '.vscode/tasks.json')
+
+with open(tasks_file_path, 'rt') as tasks_file:
+    tasks = load(tasks_file)
+
+if isfile(tasks_file_dist_path):
+    with open(tasks_file_dist_path, 'rt') as tasks_file_dist:
+        try:
+            merge_to = load(tasks_file_dist)
+        except:
+            merge_to = {}
+else:
+    merge_to = {}
+
+merge_to['version'] = tasks['version']
+known_keys = []
+for task in tasks['tasks']:
+    known_keys.append(task['id'])
+
+
+def find(id):
+    for task in tasks['tasks']:
+        if task['id'] == id:
+            task['# class'] = 'rt-thread-w60x'
+            task['# comment'] = '这个项目是自动生成的，不要修改'
+            return task
+    raise Exception(f"no found task {id}")
+
+
+if 'tasks' not in merge_to:
+    merge_to['tasks'] = []
+for task_index, task in reversed(list(enumerate(merge_to['tasks']))):
+    if task.get('# class') == 'rt-thread-w60x':
+        if task.get('id') in known_keys:
+            merge_to['tasks'][task_index] = find(task['id'])
+            known_keys.remove(task['id'])
+        else:
+            merge_to['tasks'].remove(task)
+for task_id in known_keys:
+    merge_to['tasks'].append(find(task_id))
+
+with open(tasks_file_dist_path, 'wt') as tasks_file:
+    dump(merge_to, tasks_file, quote_keys=True, allow_duplicate_keys=False, ensure_ascii=False, indent='\t')

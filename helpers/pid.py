@@ -14,6 +14,10 @@ def do_exit(code):
 
 
 def exclusive_kill():
+    global PID_WRITE
+    if PID_WRITE:
+        return
+
     if isfile(PID_FILE):
         with open(PID_FILE, 'rt') as f:
             pid = int(f.read())
@@ -27,5 +31,4 @@ def exclusive_kill():
     with open(PID_FILE, 'wt') as f:
         f.write(str(getpid()))
 
-    global PID_WRITE
     PID_WRITE = True
