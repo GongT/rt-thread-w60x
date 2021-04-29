@@ -4,7 +4,7 @@ if __name__ != '__main__':
     raise "This file can not use as a module"
 
 from os.path import dirname, abspath, split, isfile, isdir, join, relpath
-from os import getcwd, listdir, mkdir
+from os import getcwd, listdir, mkdir, chmod
 from shutil import copy2, copystat
 from pathlib import Path
 from json5 import load, dump
@@ -58,7 +58,7 @@ def readall(file):
 
 
 def copy_file(name, filter=None, overwrite=False):
-    src = join(SELF_DIR, 'install-contents', name)
+    src = join(SELF_DIR, 'pkg-contents', name)
     data = None
     if filter is not None:
         data = filter(readall(src))
@@ -96,8 +96,10 @@ for i in ['.gitignore', '.editorconfig', 'version.txt', 'SConscript']:
 
 copy_file('README.md', replace_self_name)
 copy_file('control.py', replace_self_path, overwrite=True)
+ctlpy = join(INSTALL_TO, 'control.py')
+chmod(ctlpy, 0o777)
 
-tasks_file_path = join(SELF_DIR, 'install-contents/.vscode/tasks.json')
+tasks_file_path = join(SELF_DIR, 'pkg-contents/.vscode/tasks.json')
 tasks_file_dist_path = join(INSTALL_TO, '.vscode/tasks.json')
 
 with open(tasks_file_path, 'rt') as tasks_file:
