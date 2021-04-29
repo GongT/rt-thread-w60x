@@ -10,6 +10,8 @@ help_title = '刷机并打开串口'
 def main(argv):
     exclusive_kill()
     serial_instance = open_port(get_port_number_from_first_arg(argv))
+    if serial_instance is None:
+        do_exit(1)
     r = flash(serial_instance, '--force' in argv, False)
     if not r:
         print("刷机失败")

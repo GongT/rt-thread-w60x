@@ -7,7 +7,7 @@ from pyprind import ProgBar
 import struct
 import threading
 
-from helpers import print, open_port, port_path, control_reset, FLASH_SIGNAL, PROJECT_ROOT, IMG_FILE, do_exit, die, exclusive_kill
+from helpers import print, do_exit, open_port, port_path, control_reset, FLASH_SIGNAL, PROJECT_ROOT, IMG_FILE, do_exit, die, exclusive_kill
 from . import get_port_number_from_first_arg
 
 help_title = '刷机'
@@ -16,6 +16,8 @@ help_title = '刷机'
 def main(argv):
     exclusive_kill()
     serial_port = open_port(get_port_number_from_first_arg(argv), open=True)
+    if serial_port is None:
+        do_exit(1)
     r = flash(serial_port, '--force' in argv, '--low' in argv)
     if not r:
         do_exit(1)
