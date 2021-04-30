@@ -29,7 +29,7 @@ if LIBRARY_ROOT == PROJECT_ROOT:
 
 RTT_ROOT = getenv('RTT_ROOT')
 if not RTT_ROOT:
-    die("no PROJECT_ROOT environment, you can start scons by control.py")
+    die("no RTT_ROOT environment, you must set it in settings.json")
 BSP_ROOT = join(RTT_ROOT + 'bsp/w60x')
 
 BINARY_NAME = getenv('BINARY_NAME', 'app_bin')

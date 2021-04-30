@@ -27,7 +27,7 @@ def copy_config():
 
 
 def moveback():
-    if getmtime(library_config_file) == getmtime(project_config_file):
+    if isfile(project_config_file) and isfile(library_config_file) and getmtime(library_config_file) == getmtime(project_config_file):
         print('config file did not change')
         return
     print(f"[WARN] copy to {project_config_file}")
@@ -80,10 +80,13 @@ def main(argv):
     is_menuconfig = ('--menuconfig' in argv) or ('--pyconfig' in argv)
     if is_menuconfig:
         copy_config()
-    elif md5_file(project_config_file) != get_last_hash():
-        print("config changed, updateing rtconfig.h. project will full rebuild.")
-        exec_pass('scons', [f'--useconfig={project_config_file}'])
-        write_last_hash(project_config_file)
+    elif isfile(project_config_file):
+        if md5_file(project_config_file) != get_last_hash():
+            print("config changed, updateing rtconfig.h. project will full rebuild.")
+            exec_pass('scons', [f'--useconfig={project_config_file}'])
+            write_last_hash(project_config_file)
+    else:
+        die("you have never run '\x1B[38;5;14m./control.py config\x1B[0m', no way to compile.")
 
     exec_pass('scons', argv)
 
@@ -94,7 +97,7 @@ def main(argv):
     print("\x1B[38;5;10mscons success.\x1B[0m")
     cdb_file = join(SELF_ROOT, '.vscode/compile_commands.json')
     if isfile(cdb_file):
-        dst=join(PROJECT_ROOT, '.vscode/compile_commands.json')
+        dst = join(PROJECT_ROOT, '.vscode/compile_commands.json')
         print(f"copy cdb file to {dst}")
         copy2(src=cdb_file, dst=dst)
         remove(cdb_file)
