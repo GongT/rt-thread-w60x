@@ -32,4 +32,3 @@ def main(argv):
         elif i == 5:
             print("flash erased!")
             break
-    control_reset(serial_port)

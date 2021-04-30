@@ -11,8 +11,9 @@ def python_pass(args, encoding=None):
 def exec_pass(exe, args, encoding=None):
     print("\x1B[2m +", exe, ' '.join(args), "\x1B[0m")
     p = run(executable=exe, args=[exe, *args], stderr=stderr, stdout=stderr, shell=False, encoding=encoding)
+    print("\x1B[2m +", exe, ' '.join(args), '- exit with code', p.returncode, "\x1B[0m")
     if p.returncode != 0:
-        print("command failed.")
+        print("\x1B[38;5;9mcommand failed.\x1B[0m")
         do_exit(p.returncode)
 
 

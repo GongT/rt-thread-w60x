@@ -52,6 +52,9 @@ def goto_flash_mode(serial_port):
     sleep(0.5)
     control_reset(serial_port)
 
+    serial_port.reset_output_buffer()
+    serial_port.reset_input_buffer()
+
     c_cnt = 0
     p_cnt = 0
     while True:

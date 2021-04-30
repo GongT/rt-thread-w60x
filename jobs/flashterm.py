@@ -1,4 +1,4 @@
-from helpers import print, open_port, exclusive_kill
+from helpers import print, open_port, exclusive_kill,do_exit
 
 from .flash import flash
 from .term import term

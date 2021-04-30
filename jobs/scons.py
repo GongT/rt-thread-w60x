@@ -55,8 +55,6 @@ def write_last_hash(src):
 
 def main(argv):
     argv.append(f"--sconstruct={join(SELF_ROOT, 'SConstruct')}")
-    # argv.append(f"--verbose")
-
     if '--verbose' not in argv:
         if '-j' not in argv and len([i for i in argv if i.startswith('--jobs')]) == 0:
             import multiprocessing
@@ -92,3 +90,11 @@ def main(argv):
     if is_menuconfig:
         if moveback():
             exec_pass('scons', [f'--useconfig={project_config_file}'])
+
+    print("\x1B[38;5;10mscons success.\x1B[0m")
+    cdb_file = join(SELF_ROOT, '.vscode/compile_commands.json')
+    if isfile(cdb_file):
+        dst=join(PROJECT_ROOT, '.vscode/compile_commands.json')
+        print(f"copy cdb file to {dst}")
+        copy2(src=cdb_file, dst=dst)
+        remove(cdb_file)

@@ -64,11 +64,11 @@ if not isfile(rtconfig_file):
     print(f'missing {rtconfig_file}.')
     exit(-1)
 
+BUILD_ENV = getenv('BUILD_ENV', 'debug')
 # rtconfig.py补丁
 with open(rtconfig_file, 'r+t') as rtconfig_fd:
     content = rtconfig_fd.read()
     import re
-    BUILD_ENV = getenv('BUILD_ENV', 'debug')
     r_want = re.compile(f"^BUILD = '{BUILD_ENV}'$", re.MULTILINE)
     if re.search(r_want, content) == None:
         r_repl = re.compile("^BUILD\s*=.*$", re.MULTILINE)
@@ -81,6 +81,7 @@ with open(rtconfig_file, 'r+t') as rtconfig_fd:
         rtconfig_fd.seek(0)
         rtconfig_fd.write(content)
         rtconfig_fd.truncate()
+Export('BUILD_ENV')
 
 # 加载w60x特定的构建设置
 if True:
@@ -134,7 +135,8 @@ env = Environment(
     LINKFLAGS=rtconfig.LFLAGS,
     SIZE=rtconfig.SIZE,
     OBJCPY=rtconfig.OBJCPY,
-    CPPPATH=["library/inc", join(LIBRARY_ROOT, 'include')],
+    CPPPATH=[join(LIBRARY_ROOT, 'include')],
+    CPPDEFINES=[('BUILD_ENV', BUILD_ENV)],
     COMPILATIONDB_USE_ABSPATH=True)
 Export('env')
 env.PrependENVPath('PATH', rtconfig.EXEC_PATH)
