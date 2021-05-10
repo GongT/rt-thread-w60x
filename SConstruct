@@ -2,6 +2,7 @@ from os import getenv, getcwd, chdir, environ
 from os.path import join, abspath, dirname, isfile
 from sys import path as importPath, stderr, executable as argv0
 from pathlib import Path
+import re
 
 
 def die(msg):
@@ -68,16 +69,25 @@ BUILD_ENV = getenv('BUILD_ENV', 'debug')
 # rtconfig.py补丁
 with open(rtconfig_file, 'r+t') as rtconfig_fd:
     content = rtconfig_fd.read()
-    import re
+    old_content = content
+
     r_want = re.compile(f"^BUILD = '{BUILD_ENV}'$", re.MULTILINE)
     if re.search(r_want, content) == None:
         r_repl = re.compile("^BUILD\s*=.*$", re.MULTILINE)
-        print("[WARN] patch file: %s" % rtconfig_fd.name)
         CODE = f"BUILD = '{BUILD_ENV}'"
         if re.search(r_repl, content) == None:
             content = CODE + '\n\n' + content
         else:
             content = re.sub(r_repl, CODE, content)
+
+    if content.find(" -w ") != -1:
+        content = content.replace(" -w ", " ")
+
+    if content.find(" -mcpu=cortex-m3 -mthumb ") != -1:
+        content = content.replace(" -mcpu=cortex-m3 -mthumb ", " -march=armv7-m -mtune=cortex-m3 -mthumb ")
+
+    if content != old_content:
+        print("[WARN] patch file: %s" % rtconfig_fd.name)
         rtconfig_fd.seek(0)
         rtconfig_fd.write(content)
         rtconfig_fd.truncate()
