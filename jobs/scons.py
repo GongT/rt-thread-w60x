@@ -87,8 +87,9 @@ def main(argv):
             die("missing rt-thread source code. use './control.py rtt update'.")
 
     gcc_bin = set_env_if_not('RTT_EXEC_PATH', global_store=True)
-    if not isfile(join(gcc_bin, 'gcc')):
-        if isfile(join(gcc_bin, 'bin/gcc')):
+    gcc_exec = 'arm-none-eabi-gcc'
+    if not isfile(join(gcc_bin, gcc_exec)):
+        if isfile(join(gcc_bin, 'bin', gcc_exec)):
             environ['RTT_EXEC_PATH'] = join(gcc_bin, 'bin')
         else:
             die(f"missing arm gcc binary (in {gcc_bin})\n\nplease download one from {ARM_GCC_DOWNLOAD_URL}.")
