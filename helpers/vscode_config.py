@@ -34,8 +34,9 @@ def request_config(name):
         return None
 
     if name in loaded:
-        value = loaded[name]
-        value = value.replace('${workspaceFolder}', PROJECT_ROOT)
+        value = str(loaded[name])
+        if isinstance(value, str):
+            value = value.replace('${workspaceFolder}', PROJECT_ROOT)
         return value
     else:
         return None
