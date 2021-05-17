@@ -1,5 +1,6 @@
 from os.path import dirname, join, abspath
 from os import getcwd, getenv
+from pathlib import Path
 
 SELF_ROOT = dirname(dirname(__file__))
 PID_FILE = join(SELF_ROOT, '.control.pid')
@@ -25,4 +26,6 @@ VERSION_FILE = join(PROJECT_ROOT, 'version.txt')
 
 PACKAGES_ROOT = join(PROJECT_ROOT, 'packages')
 
-del dirname, join, abspath, getcwd, getenv
+ENV_ROOT = join(Path.home(), '.env')
+
+del dirname, join, abspath, getcwd, getenv, Path

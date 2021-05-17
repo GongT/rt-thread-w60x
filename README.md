@@ -3,10 +3,12 @@
 ## 使用
 
 0. 安装系统级依赖（只需要一次）
-	* 系统包：python3、scons、串口驱动
+	* 系统包：python3（+pip）、串口驱动
 	* 第三方：arm gcc（在[这里](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads)下载）
-	* python：`pip install --user pyserial xmodem PyPrind json5`
-	* `rt-thread`源码：[GitHub](https://github.com/RT-Thread/rt-thread)或[码云](https://gitee.com/rtthread/rt-thread)，通过`git clone`或下载zip包都可以，版本至少4.x
+	* python：`pip install --user pyserial xmodem PyPrind json5 scons`
+	* `rt-thread`源码：
+		1. 运行`python control.py rtt update`
+		1. [GitHub](https://github.com/RT-Thread/rt-thread)或[码云](https://gitee.com/rtthread/rt-thread)，通过`git clone`或下载zip包都可以，版本至少4.x
 
 
 1. 找一个放源码的目录
@@ -33,7 +35,7 @@
 	* BUILD_ENV：设为`debug`则编译时使用`-O0`，其他任何内容都会使用`-O2`
 	* serialPortNumber：当执行刷写等串口命令时，使用哪个串口，填一数字，如COM1、/dev/ttyUSB1都填“1”
 
-　
+
 
 ## 命令
 ```bash

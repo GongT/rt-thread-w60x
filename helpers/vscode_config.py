@@ -1,16 +1,28 @@
-from json5 import load
+from json5 import load, dump
 from os.path import join, isfile
 from os import environ
+
 from .pathvars import PROJECT_ROOT
 from .output import debug, die
 
 loaded = None
+configfile = join(PROJECT_ROOT, '.vscode/settings.json')
+
+
+def update_config(name, value):
+    global loaded
+    curr = request_config(name)
+    if (curr == value):
+        return
+
+    loaded[name] = value
+    with open(configfile, 'wt') as config_file:
+        dump(loaded, config_file, quote_keys=True, allow_duplicate_keys=False, ensure_ascii=False, indent='\t')
 
 
 def request_config(name):
     global loaded
     if loaded is None:
-        configfile = join(PROJECT_ROOT, '.vscode/settings.json')
         if isfile(configfile):
             with open(configfile, 'rt') as f:
                 loaded = load(f)
@@ -22,7 +34,9 @@ def request_config(name):
         return None
 
     if name in loaded:
-        return loaded[name]
+        value = loaded[name]
+        value = value.replace('${workspaceFolder}', PROJECT_ROOT)
+        return value
     else:
         return None
 

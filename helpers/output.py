@@ -22,5 +22,5 @@ def debug(*vargs, **kvargs):
 
 
 def die(msg):
-    debug(msg)
+    debug(msg + '\n')
     do_exit(1)

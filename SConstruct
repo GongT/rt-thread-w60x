@@ -55,9 +55,9 @@ try:
 
     from building import *
 except:
-    print('Cannot found RT-Thread root directory, please set environment variable "RTT_ROOT", or download it into rt-thread folder in current project.')
-    print('找不到 RT-Thread 根目录，请设置环境变量“RTT_ROOT”，或下载到当前项目的rt-thread文件夹中')
-    print('Download from: https://github.com/RT-Thread/rt-thread')
+    print('Cannot found RT-Thread root directory, please edit project settings file, or set environment variable "RTT_ROOT".')
+    print('找不到 RT-Thread 根目录，请修改项目配置文件，或设置环境变量“RTT_ROOT”')
+    print('\x1B[38;5;3m./control.py rtt update\x1B[0m')
     exit(-1)
 
 rtconfig_file = join(BSP_ROOT, 'rtconfig.py')

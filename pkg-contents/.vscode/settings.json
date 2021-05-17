@@ -3,7 +3,7 @@
 	"RTT_EXEC_PATH": "",
 	/* RT-Thread内核源码根目录 */
 	"RTT_ROOT": "{RT_THREAD_ROOT}",
-	/* env工具目录，可选 debug 或任意其他值 */
+	/* 编译目标，可选 debug 或任意其他值 */
 	"BUILD_ENV": "debug",
 	/* 当运行生成任务（中的刷写）时，默认使用的端口号，例如COM11就写11 */
 	"serialPortNumber": 0,
@@ -14,6 +14,7 @@
 		"functional": "c"
 	},
 	"files.exclude": {
+		"rt-thread-w60x/pkg-contents": true,
 		"**/.git": true,
 		"**/__pycache__": true,
 		"**/*.dblite": true,

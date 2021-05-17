@@ -1,23 +1,38 @@
-from helpers import md5_file, exec_pass, request_config, die, SELF_ROOT, PROJECT_ROOT, print, BINARY_NAME, BIN_FILE
 from os import environ, chdir, name as PLATFORM_NAME, remove
-from os.path import join, isfile, getmtime
+from os.path import join, isfile, isdir, getmtime
 from shutil import copy2
+
+from helpers import md5_file, exec_pass, request_config, die, SELF_ROOT, PROJECT_ROOT, print, BINARY_NAME, BIN_FILE, try_get_env, save_env, ENV_ROOT
 
 help_title = "运行scons"
 
 project_config_file = join(PROJECT_ROOT, '.config')
 library_config_file = join(SELF_ROOT, '.config')
 
+ARM_GCC_DOWNLOAD_URL = 'https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads'
 
-def set_env_if_not(env, config=None):
+
+def set_env_if_not(env, config=None, global_store=False, required=True):
     if env in environ:
+        if global_store:
+            save_env(env, environ[env])
         return
     if config is None:
         config = env
-    v = request_config(config)
-    if v is None or type(v) != str:
-        die(f"invalid config: {config} = {v}")
-    environ[env] = v
+    value = request_config(config)
+    if value is not None:
+        value = str(value)
+    if global_store:
+        if value is None:
+            value = try_get_env(env)
+        else:
+            save_env(env, value)
+
+    if value is None and required:
+        die(f"invalid config: {config} = {value}")
+
+    environ[env] = value
+    return value
 
 
 def copy_config():
@@ -60,12 +75,23 @@ def main(argv):
             import multiprocessing
             argv.append(f'--jobs={multiprocessing.cpu_count()}')
 
-    chdir(SELF_ROOT)
     environ['PROJECT_ROOT'] = PROJECT_ROOT
     environ['BINARY_NAME'] = BINARY_NAME
-    set_env_if_not('RTT_EXEC_PATH')
-    set_env_if_not('RTT_ROOT')
     set_env_if_not('BUILD_ENV')
+
+    if set_env_if_not('RTT_ROOT', global_store=True, required=False) is None:
+        rtt_root = join(ENV_ROOT, 'rt-thread-src')
+        if isdir(rtt_root):
+            rtt_root
+        else:
+            die("missing rt-thread source code. use './control.py rtt update'.")
+
+    gcc_bin = set_env_if_not('RTT_EXEC_PATH', global_store=True)
+    if not isfile(join(gcc_bin, 'gcc')):
+        if isfile(join(gcc_bin, 'bin/gcc')):
+            environ['RTT_EXEC_PATH'] = join(gcc_bin, 'bin')
+        else:
+            die(f"missing arm gcc binary (in {gcc_bin})\n\nplease download one from {ARM_GCC_DOWNLOAD_URL}.")
 
     rtconfig_file = join(SELF_ROOT, 'rtconfig.h')
     if not isfile(rtconfig_file):
@@ -75,7 +101,7 @@ def main(argv):
     rtconfig_project_file = join(PROJECT_ROOT, 'rtconfig_project.h')
     if not isfile(rtconfig_project_file):
         with open(rtconfig_project_file, 'wt') as f:
-            f.write('// place custom config here')
+            f.write('#pragma once\n\n// place custom config here')
 
     is_menuconfig = ('--menuconfig' in argv) or ('--pyconfig' in argv)
     if is_menuconfig:
@@ -83,16 +109,16 @@ def main(argv):
     elif isfile(project_config_file):
         if md5_file(project_config_file) != get_last_hash():
             print("config changed, updateing rtconfig.h. project will full rebuild.")
-            exec_pass('scons', [f'--useconfig={project_config_file}'])
+            exec_pass('scons', [f'--useconfig={project_config_file}'], cwd=SELF_ROOT)
             write_last_hash(project_config_file)
     else:
         die("you have never run '\x1B[38;5;14m./control.py config\x1B[0m', no way to compile.")
 
-    exec_pass('scons', argv)
+    exec_pass('scons', argv, cwd=SELF_ROOT)
 
     if is_menuconfig:
         if moveback():
-            exec_pass('scons', [f'--useconfig={project_config_file}'])
+            exec_pass('scons', [f'--useconfig={project_config_file}'], cwd=SELF_ROOT)
 
     print("\x1B[38;5;10mscons success.\x1B[0m")
     cdb_file = join(SELF_ROOT, '.vscode/compile_commands.json')

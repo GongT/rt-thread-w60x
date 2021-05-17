@@ -13,5 +13,4 @@ __pycache__
 packages/
 .DS_Stor*
 .vscode/compile_commands.json
-/rt-thread
 {SELF_NAME}

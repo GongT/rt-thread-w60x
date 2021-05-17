@@ -4,12 +4,13 @@ if __name__ != '__main__':
     raise "This file can not use as a module"
 
 from os.path import dirname, abspath, split, isfile, isdir, join, relpath
-from os import getcwd, listdir, mkdir, chmod
+from os import getcwd, listdir, mkdir, chmod, chdir
 from shutil import copy2, copystat
 from pathlib import Path
 from json5 import load, dump
 
 from helpers.output import die, debug as print
+from helpers.exec import exec_pass, python_pass
 
 SELF_DIR = dirname(abspath(__file__))
 INSTALL_TO = getcwd()
@@ -22,7 +23,7 @@ SELF_DIR_REL = relpath(SELF_DIR, INSTALL_TO)
 if SELF_DIR_REL.startswith('..'):
     SELF_DIR_REL = None
 
-ENV_RT_DIR = join(Path.home(), '.env/rt-thread')
+ENV_RT_DIR = join(Path.home(), '.env/rt-thread-src')
 if not isdir(ENV_RT_DIR):
     ENV_RT_DIR = ''
 
@@ -32,6 +33,13 @@ dircontents.remove(split(SELF_DIR)[1])
 #     die("无法在此目录初始化项目，因为有多余的文件：%s...\n当前目录：%s" % (', '.join(dircontents[0:5]), INSTALL_TO))
 
 print("初始化项目……（%s）" % INSTALL_TO)
+
+if not isdir(join(INSTALL_TO, '.git')):
+    exec_pass('git', ['init', '.'], cwd=INSTALL_TO)
+    exec_pass('git', ['submodule', 'add', 'https://github.com/GongT/rt-thread-w60x.git'], cwd=INSTALL_TO)
+    chdir(INSTALL_TO)
+    python_pass([join(INSTALL_TO, 'rt-thread-w60x/install.py')])
+    exit(0)
 
 
 def place_file(name, data=None, copy=None, overwrite=False):
