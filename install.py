@@ -32,9 +32,9 @@ dircontents.remove(split(SELF_DIR)[1])
 # if len(dircontents) != 0:
 #     die("无法在此目录初始化项目，因为有多余的文件：%s...\n当前目录：%s" % (', '.join(dircontents[0:5]), INSTALL_TO))
 
-print("初始化项目……（%s）" % INSTALL_TO)
+print("初始化项目……( %s )" % INSTALL_TO)
 
-if not isdir(join(INSTALL_TO, '.git')):
+if not isdir(join(INSTALL_TO, '.git')) and not isfile(join(INSTALL_TO, '.git')):
     exec_pass('git', ['init', '.'], cwd=INSTALL_TO)
     exec_pass('git', ['submodule', 'add', 'https://github.com/GongT/rt-thread-w60x.git'], cwd=INSTALL_TO)
     chdir(INSTALL_TO)
