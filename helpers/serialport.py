@@ -38,8 +38,12 @@ def open_port(portnumber, baudrate=115200, timeout=0, write_timeout=None, open=T
 
 
 def control_reset(serial_instance):
-    serial_instance.rts = True
-    serial_instance.rts = False
+    try:
+        serial_instance.rts = True
+        serial_instance.rts = False
+        print("try hardware reset by RTS line")
+    except:
+        pass
 
 
 def goto_flash_mode(serial_port):
@@ -49,14 +53,15 @@ def goto_flash_mode(serial_port):
     holder_thread.daemon = False
     holder_thread.start()
 
-    sleep(0.5)
-    control_reset(serial_port)
-
     serial_port.reset_output_buffer()
     serial_port.reset_input_buffer()
 
+    sleep(0.5)
+    control_reset(serial_port)
+
     c_cnt = 0
     p_cnt = 0
+    # memory_input = ""
     while True:
         if not holder_thread.is_alive():
             print('hold thread died, flash fail.')
@@ -77,12 +82,18 @@ def goto_flash_mode(serial_port):
                 RET = 'P'
                 break
         else:
+            # memory_input += str(char_in)
             c_cnt = 0
             p_cnt = 0
             serial_port.read_all()
 
     stop_hold.set()
+
     print(f'Got {RET}!')
+
+    # if memory_input.find("secboot running") < 0:
+    #     print("not found 'secboot running'")
+
     return RET
 
 

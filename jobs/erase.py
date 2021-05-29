@@ -32,3 +32,14 @@ def main(argv):
         elif i == 5:
             print("flash erased!")
             break
+
+    erase_cmd = bytes.fromhex('210600c77c3f000000')
+    i = 0
+    while (True):
+        print(serial_port.read(1).decode(), end='', flush=True)
+        i += 1
+        if i == 4:
+            print("send ", erase_cmd, '!')
+        elif i == 5:
+            print("flash erased!")
+            break

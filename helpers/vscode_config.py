@@ -30,7 +30,7 @@ def request_config(name):
         else:
             debug("missing vscode config file:", configfile)
             loaded = False
-    if loaded == False:
+    if not loaded:
         return None
 
     if name in loaded:

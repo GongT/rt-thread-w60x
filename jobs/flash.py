@@ -45,34 +45,37 @@ def flash(serial_port, force, low_speed):
 
     # go to flash
     mode = goto_flash_mode(serial_port)
+    if mode == False:
+        return False
 
     if mode == 'C':
         image_file = IMG_FILE
-    elif mode == 'P':
-        image_file = FLS_FILE
-    else:
-        return False
 
-    mac = ''
-    get_mac_cmd = bytes.fromhex('210600ea2d38000000')
-    serial_port.timeout = None
-    while True:
+        mac = ''
+        get_mac_cmd = bytes.fromhex('210600ea2d38000000')
+        serial_port.timeout = 3
         sleep(0.1)
         serial_port.write(get_mac_cmd)
         mac = (serial_port.read_until())
         pos = mac.find(b'MAC:')
         if pos >= 0:
             mac = mac[pos + 4:len(mac) - 1].decode("ascii")
-            break
 
-    print('MAC Address: %s' % mac)
-    if isfile(FLASH_SIGNAL) and not force:
-        with open(FLASH_SIGNAL, 'rt') as f:
-            if f.read().strip() == mac:
-                print("this device already flash this program! skip flash. (--force to overwrite)")
-                clear_buffer()
-                control_reset(serial_port)
-                return True
+            print('MAC Address: %s' % mac)
+
+            if isfile(FLASH_SIGNAL) and not force:
+                with open(FLASH_SIGNAL, 'rt') as f:
+                    if f.read().strip() == mac:
+                        print("this device already flash this program! skip flash. (--force to overwrite)")
+                        clear_buffer()
+                        control_reset(serial_port)
+                        return True
+        else:
+            print('bootloader not response MAC address, seems level 1 running.')
+            mode = 'P'
+
+    if mode == 'P':
+        image_file = FLS_FILE
 
     # up speed
     def switch_baudrate(br):
@@ -86,7 +89,7 @@ def flash(serial_port, force, low_speed):
         serial_port.write(speed_magic)
         sleep(0.01)
         switch_baudrate(2000000)
-        serial_port.timeout = 300
+        serial_port.timeout = 0.3
         sleep(0.01)
         wront_cnt = 0
         while True:
@@ -118,8 +121,11 @@ def flash(serial_port, force, low_speed):
     print('')
     if result:
         print("download image success!")
-        with open(FLASH_SIGNAL, 'wt') as f:
-            f.write(mac)
+        if mode == 'C':
+            with open(FLASH_SIGNAL, 'wt') as f:
+                f.write(mac)
+        else:
+            control_reset(serial_port)
     else:
         print("download image fail!")
         return False
