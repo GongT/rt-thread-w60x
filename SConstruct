@@ -25,6 +25,10 @@ PROJECT_ROOT = getenv('PROJECT_ROOT')  # abspath(getcwd())
 print(f" * PROJECT_ROOT = {PROJECT_ROOT}")
 Export('PROJECT_ROOT')
 
+PKGS_DIR = join(PROJECT_ROOT, 'packages')
+print(f" * PKGS_DIR = {PKGS_DIR}")
+Export('PKGS_DIR')
+
 if LIBRARY_ROOT == PROJECT_ROOT:
     die("LIBRARY_ROOT must not same with PROJECT_ROOT")
 
@@ -40,7 +44,7 @@ importPath.append(BSP_ROOT)
 
 environ["BSP_ROOT"] = BSP_ROOT
 environ["RTT_ROOT"] = RTT_ROOT
-environ["PKGS_DIR"] = join(PROJECT_ROOT, 'packages')
+environ["PKGS_DIR"] = PKGS_DIR
 environ["ENV_ROOT"] = join(Path.home(), '.env')
 
 print(" * RTT_ROOT = %s" % RTT_ROOT)
@@ -105,6 +109,9 @@ $OBJCPY -O binary $TARGET Bin/{BINARY_NAME}.bin
 {argv0} {LIBRARY_ROOT}/control.py makeimg
 '''
 
+GCC_OPT = getenv('GCC_OPT', '2')
+rtconfig.CFLAGS = re.sub(' -O. ', f' -O{GCC_OPT} ', rtconfig.CFLAGS)
+
 # 导出
 Export('BSP_ROOT')
 Export('RTT_ROOT')
@@ -115,6 +122,7 @@ TARGET = f'Bin/{BINARY_NAME}.{rtconfig.TARGET_EXT}'
 # 输出调试信息
 print(" * COMPILER_PATH = %s" % rtconfig.EXEC_PATH)
 rtconfig.LFLAGS = rtconfig.LFLAGS.replace('drivers/linker_scripts', join(BSP_ROOT, 'drivers/linker_scripts'))
+rtconfig.LFLAGS += ' -Wl,-wrap,rt_show_version '
 
 print(" * ASFLAGS = %s" % rtconfig.AFLAGS)
 print(" * CCFLAGS = %s" % rtconfig.CFLAGS)

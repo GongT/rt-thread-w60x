@@ -1,4 +1,4 @@
-from subprocess import run
+from subprocess import run, PIPE
 from sys import stderr, stdout, executable as argv0
 
 from .output import debug as print
@@ -18,6 +18,14 @@ def exec_pass(exe, args, encoding=None, cwd=PROJECT_ROOT):
         print("\x1B[38;5;9mcommand failed.\x1B[0m")
         do_exit(p.returncode)
 
+def exec_get(exe, args, encoding='utf8', cwd=PROJECT_ROOT):
+    print("\x1B[2m +", exe, ' '.join(args), "\x1B[0m")
+    p = run(executable=exe, args=[exe, *args], stderr=stderr, stdout=PIPE, shell=False, encoding=encoding, cwd=cwd)
+    print("\x1B[2m +", exe, ' '.join(args), '- exit with code', p.returncode, "\x1B[0m")
+    if p.returncode != 0:
+        print("\x1B[38;5;9mcommand failed.\x1B[0m")
+        do_exit(p.returncode)
+    return p.stdout
 
 def eval_pass(fn, args, name=None):
     if name is None:

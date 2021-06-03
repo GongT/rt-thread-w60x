@@ -28,10 +28,11 @@ def set_env_if_not(env, config=None, global_store=False, required=True):
         else:
             save_env(env, value)
 
-    if value is None and required:
-        die(f"invalid config: {config} = {value}")
-
-    environ[env] = value
+    if value is None:
+        if required:
+            die(f"invalid config: {config} = {value}")
+    else:
+        environ[env] = str(value)
     return value
 
 
@@ -78,11 +79,13 @@ def main(argv):
     environ['PROJECT_ROOT'] = PROJECT_ROOT
     environ['BINARY_NAME'] = BINARY_NAME
     set_env_if_not('BUILD_ENV')
+    if set_env_if_not('GCC_OPT', required=False) is None:
+        environ['GCC_OPT'] = '2'
 
     if set_env_if_not('RTT_ROOT', global_store=True, required=False) is None:
         rtt_root = join(ENV_ROOT, 'rt-thread-src')
         if isdir(rtt_root):
-            rtt_root
+            environ['RTT_ROOT'] = rtt_root
         else:
             die("missing rt-thread source code. use './control.py rtt update'.")
 

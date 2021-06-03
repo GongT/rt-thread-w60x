@@ -5,6 +5,7 @@
 	"RTT_ROOT": "{RT_THREAD_ROOT}",
 	/* 编译目标，可选 debug 或任意其他值 */
 	"BUILD_ENV": "debug",
+	"GCC_OPT": 2,
 	/* 当运行生成任务（中的刷写）时，默认使用的端口号，例如COM11就写11 */
 	"serialPortNumber": 0,
 	"files.associations": {

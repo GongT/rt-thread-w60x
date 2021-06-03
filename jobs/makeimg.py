@@ -1,5 +1,7 @@
+from math import ceil
 from os import chmod, remove
 from os.path import isfile
+from pathlib import Path
 
 from helpers import md5_file, die, exec_pass, load_wm_module, tools_path, python_pass, eval_pass, BIN_FILE, VERSION_FILE, IMG_FILE, FLS_FILE, FLASH_SIGNAL, print
 
@@ -34,10 +36,17 @@ def main(argv):
 
     python_pass([tools_path('wm_gzip.py'), BIN_FILE])
 
-    eval_pass(runMakeImg, [BIN_FILE + '.gz', IMG_FILE, '0', '1', VERSION_FILE, '90000', '10100', BIN_FILE])
+    eval_pass(runMakeImg, [BIN_FILE + '.gz', IMG_FILE, '0', '1', VERSION_FILE, '90000', '10100', BIN_FILE], 'makeimg')
     print()
-    eval_pass(runMakeImgFls, [tools_path('secboot.img'), IMG_FILE, FLS_FILE])
+    eval_pass(runMakeImgFls, [tools_path('secboot.img'), IMG_FILE, FLS_FILE], 'makeimg_fls')
     print()
+
+    size = Path(BIN_FILE).stat().st_size
+    size_k = ceil(size / 1000)
+    if size > 0x808FFFF - 0x8010100:
+        print(f"\x1B[38;5;9mbin file size: {size} bytes ({size_k}kb) > {0x808FFFF - 0x8010100}\x1B[0m")
+    else:
+        print(f"bin file size: {size} bytes ({size_k}kb)")
 
     with open(IMG_FILE + '.md5', 'rt+' if isfile(IMG_FILE + '.md5') else 'wt+') as f:
         f.seek(0)

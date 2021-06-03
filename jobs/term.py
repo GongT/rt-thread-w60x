@@ -1,11 +1,12 @@
 from serial.tools.miniterm import Miniterm, key_description
-from helpers import print, open_port, exclusive_kill
+from helpers import print, open_port, exclusive_kill, do_exit
 from . import get_port_number_from_first_arg
 
 help_title = '打开串口'
 
 
 def main(argv):
+    exclusive_kill()
     serial_instance = open_port(get_port_number_from_first_arg(argv))
 
     if serial_instance is None:
@@ -15,7 +16,6 @@ def main(argv):
 
 
 def term(serial_instance):
-    exclusive_kill()
     encoding = 'Latin1'
 
     if not hasattr(serial_instance, 'cancel_read'):
