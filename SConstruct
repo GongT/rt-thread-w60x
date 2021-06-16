@@ -111,6 +111,7 @@ $OBJCPY -O binary $TARGET Bin/{BINARY_NAME}.bin
 
 GCC_OPT = getenv('GCC_OPT', '2')
 rtconfig.CFLAGS = re.sub(' -O. ', f' -O{GCC_OPT} ', rtconfig.CFLAGS)
+rtconfig.CFLAGS += ' -fdiagnostics-color=always -fdiagnostics-urls=always '
 
 # 导出
 Export('BSP_ROOT')
@@ -122,7 +123,6 @@ TARGET = f'Bin/{BINARY_NAME}.{rtconfig.TARGET_EXT}'
 # 输出调试信息
 print(" * COMPILER_PATH = %s" % rtconfig.EXEC_PATH)
 rtconfig.LFLAGS = rtconfig.LFLAGS.replace('drivers/linker_scripts', join(BSP_ROOT, 'drivers/linker_scripts'))
-rtconfig.LFLAGS += ' -Wl,-wrap,rt_show_version '
 
 print(" * ASFLAGS = %s" % rtconfig.AFLAGS)
 print(" * CCFLAGS = %s" % rtconfig.CFLAGS)

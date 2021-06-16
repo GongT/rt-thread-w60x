@@ -10,6 +10,10 @@ project_config_file = join(PROJECT_ROOT, '.config')
 library_config_file = join(SELF_ROOT, '.config')
 
 ARM_GCC_DOWNLOAD_URL = 'https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads'
+GCC_COLORS = [
+    'error=38;5;1;1', 'warning=38;5;9;1', 'note=38;5;13;1', 'range1=32', 'range2=34', 'locus=48;5;2', 'quote=01', 'path=01;36', 'fixit-insert=32', 'fixit-delete=31', 'diff-filename=01',
+    'diff-hunk=32', 'diff-delete=31', 'diff-insert=32', 'type-diff=01;32'
+]
 
 
 def set_env_if_not(env, config=None, global_store=False, required=True):
@@ -76,6 +80,8 @@ def main(argv):
             import multiprocessing
             argv.append(f'--jobs={multiprocessing.cpu_count()}')
 
+    environ['GCC_COLORS'] = ':'.join(GCC_COLORS)
+    environ['GCC_URLS'] = 'st'
     environ['PROJECT_ROOT'] = PROJECT_ROOT
     environ['BINARY_NAME'] = BINARY_NAME
     set_env_if_not('BUILD_ENV')

@@ -35,7 +35,7 @@ def IncludeChilds(root, variant_dir='', skip=[], duplicate=0):
         if path == __dir__ or path == PKGS_DIR:
             continue
 
-        objs += IncludeFolder(path, variant_dir=variant_dir+d, duplicate=duplicate, missing_ok=True)
+        objs += IncludeFolder(path, variant_dir=variant_dir + d, duplicate=duplicate, missing_ok=True)
     return objs
 
 
@@ -55,16 +55,18 @@ debug(f'Using {proj_script}')
 
 objs = []
 
-objs += IncludeFolder(PKGS_DIR, variant_dir='packages')
+objs += IncludeFolder(PKGS_DIR, variant_dir='10-packages')
 
 if isfile(proj_script):
-    base = SConscript(proj_script, duplicate=0, variant_dir='user')
+    base = SConscript(proj_script, duplicate=0, variant_dir='00-user')
     if base is None:
         die(f"Missing Return(...) in {proj_script}")
     objs += base
 else:
-    objs += IncludeChilds(PROJECT_ROOT, variant_dir='user', skip=[self_dir], duplicate=0)
+    objs += IncludeChilds(PROJECT_ROOT, variant_dir='00-user', skip=[self_dir], duplicate=0)
 
-objs += IncludeChilds(BSP_ROOT, duplicate=0, variant_dir='bsp', skip=['applications'])
+objs += IncludeChilds(BSP_ROOT, duplicate=0, variant_dir='99-bsp', skip=['applications'])
+
+objs += IncludeFolder(join(LIBRARY_ROOT, 'src'), variant_dir='50-w60x-gongt-helpers', duplicate=0, missing_ok=False)
 
 Return('objs')

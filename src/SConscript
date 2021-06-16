@@ -1,0 +1,36 @@
+from building import GetCurrentDir, DefineGroup, GetDepend
+from os.path import join
+
+cwd = GetCurrentDir()
+
+gcc_warn_flag = [
+    'extra',
+    'undef',
+    'missing-declarations',
+    'redundant-decls',
+    'unreachable-code',
+    'inline',
+    'disabled-optimization',
+    'error=implicit-function-declaration',
+    'no-unused-parameter',
+]
+
+LINKFLAGS = ''
+src = ["helper.c", "flash.c"]
+
+if GetDepend('BOOT_CLEAR_SCREEN'):
+    print("[tools] using boot clear screen")
+    LINKFLAGS += ' -Wl,-wrap,rt_show_version '
+    src += ['replacement/rtt_version.c']
+
+if GetDepend('PKG_USING_MBEDTLS_DEBUG'):
+    print("[tools] using mbedtls default debug")
+    LINKFLAGS += ' -Wl,-wrap,mbedtls_ssl_config_init '
+    src += ['replacement/mbed_log.c']
+
+# RT_USING_FINSH
+
+objs = []
+objs += DefineGroup('gongt-helpers', src, depend=[''], LOCAL_CCFLAGS=' -W' + ' -W'.join(gcc_warn_flag) + ' ', LINKFLAGS=LINKFLAGS)
+
+Return('objs')

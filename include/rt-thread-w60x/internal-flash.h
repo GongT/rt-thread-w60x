@@ -3,7 +3,7 @@
 #ifndef INSIDE_FLS_BLOCK_SIZE
 #define INSIDE_FLS_BLOCK_SIZE (0x10000UL)
 #define INSIDE_FLS_SECTOR_SIZE (0x1000UL)
-#define INSIDE_FLS_PAGE_SIZE (0x100UL)
+#define INSIDE_FLS_PAGE_SIZE 256 // (0x100UL)
 #endif
 
 #define TLS_PHY_PARAM_ADDR (FLASH_BASE_ADDR)
@@ -37,28 +37,27 @@
 #define TLS_FLASH_END_ADDR (TLS_FLASH_PARAM_RESTORE_ADDR + 0x1000 - 1)
 // ### flash settings END
 
-#ifdef RT_DEBUG_COLOR
-#define __RT_DEBUG_COLOR_DIM "\x1B[2m"
-#define __RT_DEBUG_COLOR_RESET "\x1B[0m"
-#else
-#define __RT_DEBUG_COLOR_DIM
-#define __RT_DEBUG_COLOR_RESET
-#endif
-#define print_internal_flash_map()                                                                                              \
-	{                                                                                                                           \
-		rt_kprintf(__RT_DEBUG_COLOR_DIM "Internal Flash Map:\n");                                                               \
-		rt_kprintf("Basic: start=0x%X end=0x%X\n", FLASH_BASE_ADDR, FLASH_1M_END_ADDR);                                         \
-		rt_kprintf("       end=0x%X\n", TLS_FLASH_END_ADDR);                                                                    \
-		rt_kprintf("Program header: address=0x%X len=%d\n", CODE_RUN_HEADER_ADDR, CODE_RUN_HEADER_AREA_LEN);                    \
-		rt_kprintf("Program code  : address=0x%X len=%d\n", CODE_RUN_START_ADDR, CODE_RUN_AREA_LEN);                            \
-		rt_kprintf("Update header: address=0x%X len=%d\n", CODE_UPD_HEADER_ADDR, TLS_FLASH_PARAM1_ADDR - CODE_UPD_HEADER_ADDR); \
-		rt_kprintf("Update code  : address=0x%X len=%d\n", CODE_UPD_START_ADDR, CODE_UPD_AREA_LEN);                             \
-		rt_kprintf("User area: address=0x%X len=%d end=0x%X\n", USER_ADDR_START, USER_AREA_LEN, USER_ADDR_END);                 \
-		rt_kprintf("Params:\n");                                                                                                \
-		rt_kprintf("  default=0x%X\n", TLS_FLASH_PARAM_DEFAULT);                                                                \
-		rt_kprintf("  1      =0x%X\n", TLS_FLASH_PARAM1_ADDR);                                                                  \
-		rt_kprintf("  2      =0x%X\n", TLS_FLASH_PARAM2_ADDR);                                                                  \
-		rt_kprintf("  restore=0x%X"__RT_DEBUG_COLOR_RESET                                                                       \
-				   "\n",                                                                                                        \
-				   TLS_FLASH_PARAM_RESTORE_ADDR);                                                                               \
+extern struct fal_flash_dev w60x_onchip;
+
+#define W60X_INTFLS_PART_FAL_PART(name, start, size)                               \
+	{                                                                              \
+		FAL_PART_MAGIC_WROD, name, "w60x_onchip", start - FLASH_BASE_ADDR, size, 0 \
 	}
+
+#define W60X_INTFLS_PART_PAGE(name, start) W60X_INTFLS_PART_FAL_PART(name, start, INSIDE_FLS_PAGE_SIZE)
+#define W60X_INTFLS_PART_SECTOR(name, start) W60X_INTFLS_PART_FAL_PART(name, start, INSIDE_FLS_SECTOR_SIZE)
+
+#define W600_INTERNAL_FLASH_PARTITION_TABLE W60X_INTFLS_PART_SECTOR("param_phy", TLS_PHY_PARAM_ADDR),                                      \
+											W60X_INTFLS_PART_SECTOR("param_flash", TLS_QFLASH_PARAM_ADDR),                                 \
+											W60X_INTFLS_PART_PAGE("secboot_hdr", SECBOOT_HEADER_ADDR),                                     \
+											W60X_INTFLS_PART_FAL_PART("secboot", SECBOOT_ADDR, SECBOOT_AREA_LEN),                          \
+											W60X_INTFLS_PART_PAGE("code_header", CODE_RUN_HEADER_ADDR),                                    \
+											W60X_INTFLS_PART_FAL_PART("code", CODE_RUN_START_ADDR, CODE_RUN_AREA_LEN),                     \
+											W60X_INTFLS_PART_FAL_PART(FAL_PARTITION_UPDATE_IMAGE, CODE_UPD_START_ADDR, CODE_UPD_AREA_LEN), \
+											W60X_INTFLS_PART_FAL_PART(FAL_PARTITION_STORAGE, USER_ADDR_START, USER_AREA_LEN),              \
+											W60X_INTFLS_PART_PAGE(FAL_PARTITION_UPDATE_IMAGE "_header", CODE_UPD_HEADER_ADDR),             \
+											W60X_INTFLS_PART_SECTOR("param_1", TLS_FLASH_PARAM1_ADDR),                                     \
+											W60X_INTFLS_PART_SECTOR("param_2", TLS_FLASH_PARAM2_ADDR),                                     \
+											W60X_INTFLS_PART_SECTOR("param_res", TLS_FLASH_PARAM_RESTORE_ADDR)
+
+extern void print_internal_flash_map();
