@@ -16,8 +16,8 @@ def do_update(rtt_root, version):
 
     exec_pass("git", ['reset', '--hard'], cwd=rtt_root)
     exec_pass("git", ['clean', '-ffdx'], cwd=rtt_root)
+    exec_pass("git", ['fetch'], cwd=rtt_root)
     exec_pass("git", ['checkout', version, '--force'], cwd=rtt_root)
-    exec_pass("git", ['pull'], cwd=rtt_root)
     exec_pass("git", ['branch'])
 
 
