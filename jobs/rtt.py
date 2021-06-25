@@ -20,13 +20,19 @@ def do_update(rtt_root):
     exec_pass("git", ['branch'])
 
 
-def do_clone(rtt_root, remote):
+def do_clone(rtt_root, remote, depth=None):
     print(f"clone {remote} to {rtt_root}")
     pp = dirname(abspath(rtt_root))
     if not isdir(pp):
         print("create directory: " + pp)
         makedirs(pp, exist_ok=True)
-    exec_pass("git", ['clone', '--depth', '3', '--recurse-submodules', '--shallow-submodules', remote, rtt_root])
+
+    args = []
+    if depth is not None:
+        args.append('--depth')
+        args.append(str(depth))
+
+    exec_pass("git", ['clone'] + args + ['--recurse-submodules', '--shallow-submodules', remote, rtt_root])
     exec_pass("git", ['branch'])
 
 

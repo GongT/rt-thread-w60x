@@ -1,10 +1,13 @@
 from os.path import join, isfile, isdir
-from os import mkdir
+from os import mkdir, environ
 from .pathvars import ENV_ROOT
 
 ENV_FILE = join(ENV_ROOT, "rt-thread-w60x.env.sh")
 already_open = False
 data = {}
+
+if 'CI' in environ:
+    already_open = True
 
 
 def read_file():
