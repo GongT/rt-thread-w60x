@@ -1,4 +1,4 @@
-from os import name as PLATFORM_NAME, getenv, mkdir, makedirs
+from os import name as PLATFORM_NAME, environ, getenv, mkdir, makedirs
 from os.path import join, isdir, abspath, isfile, dirname
 from .scons import scons
 from shutil import copytree
