@@ -11,8 +11,8 @@ library_config_file = join(SELF_ROOT, '.config')
 
 ARM_GCC_DOWNLOAD_URL = 'https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads'
 GCC_COLORS = [
-    'error=38;5;1;1', 'warning=38;5;9;1', 'note=38;5;13;1', 'range1=32', 'range2=34', 'locus=48;5;2', 'quote=01', 'path=01;36', 'fixit-insert=32', 'fixit-delete=31', 'diff-filename=01',
-    'diff-hunk=32', 'diff-delete=31', 'diff-insert=32', 'type-diff=01;32'
+    'error=38;5;1;1', 'warning=38;5;9;1', 'note=38;5;13;1', 'range1=32', 'range2=34', 'locus=48;5;2', 'quote=01', 'path=01;36', 'fixit-insert=32', 'fixit-delete=31',
+    'diff-filename=01', 'diff-hunk=32', 'diff-delete=31', 'diff-insert=32', 'type-diff=01;32'
 ]
 
 
@@ -95,7 +95,7 @@ def main(argv):
         else:
             die(f"missing rt-thread source code (it should at {rtt_root}). use './control.py rtt update'.")
 
-    gcc_bin = set_env_if_not('RTT_EXEC_PATH', global_store=True)
+    gcc_bin = set_env_if_not('RTT_EXEC_PATH', required=True, global_store=True)
     gcc_exec = 'arm-none-eabi-gcc'
     if not isfile(join(gcc_bin, gcc_exec)):
         if isfile(join(gcc_bin, 'bin', gcc_exec)):
