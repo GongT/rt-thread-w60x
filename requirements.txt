@@ -3,3 +3,4 @@ xmodem>=0.4.6
 PyPrind>=2.11.2
 json5>=0.9.5
 scons>=4.1.0
+requests>=2.25.1
