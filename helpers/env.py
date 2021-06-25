@@ -1,13 +1,11 @@
 from os.path import join, isfile, isdir
 from os import mkdir, environ
+from pathlib import Path
 from .pathvars import ENV_ROOT
 
 ENV_FILE = join(ENV_ROOT, "rt-thread-w60x.env.sh")
 already_open = False
 data = {}
-
-if 'CI' in environ:
-    already_open = True
 
 
 def read_file():
@@ -29,6 +27,8 @@ def read_file():
 
 
 def try_get_env(name):
+    if 'CI' in environ:
+        return
     read_file()
     if name in data:
         return data[name]
@@ -38,8 +38,14 @@ def try_get_env(name):
 
 def save_env(name, value):
     global data
+    if 'CI' in environ:
+        return
     read_file()
     data[name] = value
+
+    p = Path(ENV_FILE).parent
+    if not p.exists():
+        p.mkdir()
 
     with open(ENV_FILE, 'wt') as myfile:
         for k, v in data.items():
