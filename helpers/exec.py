@@ -1,5 +1,5 @@
 from subprocess import run, PIPE
-from sys import stderr, stdout, executable as argv0
+from sys import executable as argv0, stderr
 
 from .output import debug as print
 from .pid import do_exit

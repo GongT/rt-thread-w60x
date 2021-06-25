@@ -8,6 +8,8 @@ from .output import debug, die
 loaded = None
 configfile = join(PROJECT_ROOT, '.vscode/settings.json')
 
+if 'CI' in environ:
+    loaded = False
 
 def update_config(name, value):
     global loaded

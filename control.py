@@ -8,7 +8,7 @@ import traceback
 
 
 def main(argv):
-    from os.path import join, dirname
+    pass
 
     action = argv[0]
     argv = argv[1:]

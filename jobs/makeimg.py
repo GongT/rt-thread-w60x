@@ -1,5 +1,5 @@
 from math import ceil
-from os import chmod, remove
+from os import remove
 from os.path import isfile
 from pathlib import Path
 

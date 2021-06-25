@@ -1,8 +1,8 @@
-from os import environ, chdir, name as PLATFORM_NAME, remove
+from os import environ, remove
 from os.path import join, isfile, isdir, getmtime
 from shutil import copy2
 
-from helpers import md5_file, exec_pass, request_config, die, SELF_ROOT, PROJECT_ROOT, print, BINARY_NAME, BIN_FILE, try_get_env, save_env, ENV_ROOT
+from helpers import md5_file, exec_pass, set_env_if_not, die, ensure_rtt_root, SELF_ROOT, PROJECT_ROOT, print, BINARY_NAME, ENV_ROOT
 
 help_title = "运行scons"
 
@@ -14,30 +14,6 @@ GCC_COLORS = [
     'error=38;5;1;1', 'warning=38;5;9;1', 'note=38;5;13;1', 'range1=32', 'range2=34', 'locus=48;5;2', 'quote=01', 'path=01;36', 'fixit-insert=32', 'fixit-delete=31',
     'diff-filename=01', 'diff-hunk=32', 'diff-delete=31', 'diff-insert=32', 'type-diff=01;32'
 ]
-
-
-def set_env_if_not(env, config=None, global_store=False, required=True):
-    if env in environ:
-        if global_store:
-            save_env(env, environ[env])
-        return environ[env]
-    if config is None:
-        config = env
-    value = request_config(config)
-    if value is not None:
-        value = str(value)
-    if global_store:
-        if value is None:
-            value = try_get_env(env)
-        else:
-            save_env(env, value)
-
-    if value is None:
-        if required:
-            die(f"invalid config: {config} = {value}")
-    else:
-        environ[env] = str(value)
-    return value
 
 
 def copy_config():
@@ -88,12 +64,9 @@ def main(argv):
     if set_env_if_not('GCC_OPT', required=False) is None:
         environ['GCC_OPT'] = '2'
 
-    if set_env_if_not('RTT_ROOT', global_store=True, required=False) is None:
-        rtt_root = join(ENV_ROOT, 'rt-thread-src')
-        if isdir(rtt_root):
-            environ['RTT_ROOT'] = rtt_root
-        else:
-            die(f"missing rt-thread source code (it should at {rtt_root}). use './control.py rtt update'.")
+    rtt_root = ensure_rtt_root()
+    if rtt_root is None or not isdir(rtt_root):
+        die(f"missing rt-thread source code (should at {rtt_root}). use './control.py rtt update'.")
 
     gcc_bin = set_env_if_not('RTT_EXEC_PATH', required=True, global_store=True)
     gcc_exec = 'arm-none-eabi-gcc'

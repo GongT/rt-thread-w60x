@@ -8,3 +8,4 @@ from .wm_library import load_wm_module, tools_path
 from .serialport import open_port, port_path, control_reset, goto_flash_mode
 from .md5 import md5_file
 from .env import try_get_env, save_env
+from .global_config import ensure_rtt_root, set_env_if_not

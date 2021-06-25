@@ -1,7 +1,7 @@
-from os import getpid, kill, mkdir, remove, waitpid
+from os import getpid, kill, remove, waitpid
 from sys import exit
 from signal import SIGINT
-from os.path import isdir, isfile
+from os.path import isfile
 from .pathvars import BIN_PATH, PID_FILE, SELF_BIN_PATH
 
 PID_WRITE = False

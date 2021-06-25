@@ -1,4 +1,3 @@
-from os import name as PLATFORM_NAME, getenv
 from pathlib import Path
 from helpers import PACKAGES_ROOT, exec_get
 

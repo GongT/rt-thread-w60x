@@ -14,7 +14,6 @@ def reset_pkgs():
 
 
 def main(argv):
-    print(argv)
     if len(argv) > 0 and argv[0] == '--force-update':
         reset_pkgs()
 

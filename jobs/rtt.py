@@ -1,9 +1,8 @@
-from os import name as PLATFORM_NAME, environ, getenv, mkdir, makedirs
+from os import makedirs
 from os.path import join, isdir, abspath, isfile, dirname
-from .scons import scons
 from shutil import copytree
 
-from helpers import request_config, update_config, ENV_ROOT, print, PROJECT_ROOT, exec_pass, do_exit, die, try_get_env
+from helpers import ensure_rtt_root, update_config, ENV_ROOT, print, PROJECT_ROOT, exec_pass, do_exit, die, try_get_env
 
 help_title = "下载和管理RT-Thread源码"
 RTT_GIT_GITHUB = 'https://github.com/RT-Thread/rt-thread.git'
@@ -70,20 +69,11 @@ def usage():
     do_exit(1)
 
 
-def rtt_root_fallback():
-    rtt_root = try_get_env('RTT_ROOT')
-    if rtt_root is None:
-        rtt_root = join(ENV_ROOT, 'rt-thread-src')
-    return rtt_root
-
-
 def main(argv):
     if len(argv) < 1:
         return usage()
 
-    rtt_root = request_config("RTT_ROOT")
-    if rtt_root is None:
-        rtt_root = rtt_root_fallback()
+    rtt_root = ensure_rtt_root()
 
     source = RTT_GIT_GITHUB if '--github' in argv else RTT_GIT_GITEE
 
@@ -95,7 +85,7 @@ def main(argv):
     elif argv[0] == 'fork':
         clone_to = join(PROJECT_ROOT, "rt-thread")
         if (rtt_root == clone_to):
-            rtt_root = rtt_root_fallback()
+            die("rt-thread already inside project")
 
         if isfile(join(PROJECT_ROOT, 'rt-thread/Kconfig')):
             die("rt-thread already copied to project")
