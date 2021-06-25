@@ -20,7 +20,7 @@ def set_env_if_not(env, config=None, global_store=False, required=True):
     if env in environ:
         if global_store:
             save_env(env, environ[env])
-        return
+        return environ[env]
     if config is None:
         config = env
     value = request_config(config)
