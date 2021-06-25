@@ -75,12 +75,9 @@ def main(argv):
     if len(argv) < 1:
         return usage()
 
-    if 'CI' in environ:
-        rtt_root = join(PROJECT_ROOT, "rt-thread")
-    else:
-        rtt_root = request_config("RTT_ROOT")
-        if rtt_root is None:
-            rtt_root = rtt_root_fallback()
+    rtt_root = request_config("RTT_ROOT")
+    if rtt_root is None:
+        rtt_root = rtt_root_fallback()
 
     source = RTT_GIT_GITHUB if '--github' in argv else RTT_GIT_GITEE
 

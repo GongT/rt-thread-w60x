@@ -93,7 +93,7 @@ def main(argv):
         if isdir(rtt_root):
             environ['RTT_ROOT'] = rtt_root
         else:
-            die("missing rt-thread source code. use './control.py rtt update'.")
+            die(f"missing rt-thread source code (it should at {rtt_root}). use './control.py rtt update'.")
 
     gcc_bin = set_env_if_not('RTT_EXEC_PATH', global_store=True)
     gcc_exec = 'arm-none-eabi-gcc'
