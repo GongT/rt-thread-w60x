@@ -113,7 +113,7 @@ def main(argv):
         with open(rtconfig_project_file, 'wt') as f:
             f.write('#pragma once\n\n// place custom config here')
 
-    is_menuconfig = ('--menuconfig' in argv) or ('--pyconfig' in argv)
+    is_menuconfig = ('--menuconfig' in argv) or ('--pyconfig' in argv) or ('--pyconfig-silent' in argv)
     if is_menuconfig:
         copy_config()
     elif isfile(project_config_file):
