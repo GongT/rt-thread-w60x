@@ -1,5 +1,5 @@
 from subprocess import run, PIPE
-from sys import executable as argv0, stderr
+from sys import executable as argv0, stderr, stdin
 
 from .output import debug as print
 from .pid import do_exit
@@ -20,7 +20,7 @@ def exec_pass(exe, args, encoding=None, cwd=PROJECT_ROOT):
 
 def exec_get(exe, args, encoding='utf8', cwd=PROJECT_ROOT):
     print("\x1B[2m +", exe, ' '.join(args), "\x1B[0m")
-    p = run(executable=exe, args=[exe, *args], stderr=stderr, stdout=PIPE, shell=False, encoding=encoding, cwd=cwd)
+    p = run(executable=exe, args=[exe, *args], stderr=stderr, stdout=PIPE, input="", shell=False, encoding=encoding, cwd=cwd)
     print("\x1B[2m +", exe, ' '.join(args), '- exit with code', p.returncode, "\x1B[0m")
     if p.returncode != 0:
         print("\x1B[38;5;9mcommand failed.\x1B[0m")

@@ -2,27 +2,32 @@ from os import makedirs
 from os.path import join, isdir, abspath, isfile, dirname
 from shutil import copytree
 
-from helpers import print, ensure_rtt_root, update_config, ENV_ROOT, print, PROJECT_ROOT, exec_pass, do_exit, die, try_get_env
+from helpers import print, ensure_rtt_root, update_config, ENV_ROOT, print, PROJECT_ROOT, exec_pass, do_exit, die, try_get_env, exec_get
 
 help_title = "下载和管理RT-Thread源码"
 RTT_GIT_GITHUB = 'https://github.com/RT-Thread/rt-thread.git'
 RTT_GIT_GITEE = 'https://gitee.com/rtthread/rt-thread.git'
 
 
-def do_update(rtt_root, version):
+def do_clone_or_update(rtt_root, source):
+    if isfile(join(rtt_root, 'Kconfig')):
+        do_update(rtt_root)
+    else:
+        do_clone(rtt_root, source)
+
+
+def do_update(rtt_root):
     if not isdir(join(rtt_root, '.git')):
         print('rtt_root=' + rtt_root)
         die("rtthread未受git管理（或受父项目控制），不支持自动更新")
 
     exec_pass("git", ['reset', '--hard'], cwd=rtt_root)
     exec_pass("git", ['clean', '-ffdx'], cwd=rtt_root)
-    exec_pass("git", ['fetch'], cwd=rtt_root)
-    exec_pass("git", ['checkout', version, '--force'], cwd=rtt_root)
-    exec_pass("git", ['branch'])
+    exec_pass("git", ['fetch', '--tags'], cwd=rtt_root)
 
 
-def do_clone(rtt_root, remote, version, depth=None):
-    print(f"clone {remote} to {rtt_root} (branch {version})")
+def do_clone(rtt_root, remote, depth=None):
+    print(f"clone {remote} to {rtt_root}")
     pp = dirname(abspath(rtt_root))
     if not isdir(pp):
         print("create directory: " + pp)
@@ -33,7 +38,7 @@ def do_clone(rtt_root, remote, version, depth=None):
         args.append('--depth')
         args.append(str(depth))
 
-    exec_pass("git", ['clone'] + args + ['--recurse-submodules', '--branch', version, '--shallow-submodules', remote, rtt_root])
+    exec_pass("git", ['clone'] + args + ['--recurse-submodules', '--shallow-submodules', remote, rtt_root])
     exec_pass("git", ['branch'])
 
 
@@ -64,7 +69,8 @@ def do_export(rtt_root, target):
 
 def usage():
     print("Usage: control.py rtt <command>")
-    print("  update: clone or update rt-thread source code")
+    print("  update [tag]: clone or update rt-thread source code")
+    print("  versions: list rt-thread version")
     print("  fork: copy rt-thread source code into current project")
     print("")
     print("Node: default clone from gitee.com, pass '--github' to use github.com")
@@ -82,17 +88,20 @@ def main(argv: list[str]):
     if len(argv) < 1:
         return usage()
 
-    version = 'lts-v3.1.x'
+    version = 'v4.0.3'
     if len(argv) > 1:
         version = argv[1]
 
     rtt_root = ensure_rtt_root()
 
     if argv[0] == 'update':
-        if isfile(join(rtt_root, 'Kconfig')):
-            do_update(rtt_root, version)
-        else:
-            do_clone(rtt_root, source, version)
+        do_clone_or_update(rtt_root, source)
+        exec_pass("git", ['checkout', version, '--force'], cwd=rtt_root)
+    elif argv[0] == 'versions':
+        do_clone_or_update(rtt_root, source)
+        r: str = exec_get("git", ['tag', '--list'], cwd=rtt_root)
+        r = r.strip()
+        print(r.split('\n'))
     elif argv[0] == 'fork':
         clone_to = join(PROJECT_ROOT, "rt-thread")
         if (rtt_root == clone_to):
