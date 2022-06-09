@@ -2,9 +2,12 @@
 
 from helpers import Usage, do_exit, loadJob, print, BIN_PATH, SELF_BIN_PATH
 from os.path import isdir
-from os import mkdir
-from sys import argv
+from os import mkdir, environ, environ, pathsep
+from sys import argv, executable
+from pathlib import Path
 import traceback
+
+environ["PATH"] = Path(executable).parent.as_posix() + pathsep + environ["PATH"]
 
 
 def main(argv):
